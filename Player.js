@@ -12,28 +12,22 @@ class Player {
       ArrowLeft: false,
     };
 
-    // Bind the event handlers to maintain proper 'this' context
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
     this.setImage(_gifPath);
-    
+
     this.enable();
   }
 
   setImage(gifPath) {
-    // Remove previous image if exists
     if (this.image) {
       this.image.remove();
     }
 
-    // Create new image element
     this.image = createImg(gifPath, "");
-
-    // Style the image element
     this.image.style("position", "absolute");
     this.image.style("pointer-events", "none");
 
-    // If size was set before image, apply it now
     if (this.width && this.height) {
       this.setSize(this.width, this.height);
     }
@@ -55,8 +49,8 @@ class Player {
   setPosition(x, y) {
     this.x = x;
     this.y = y;
+
     if (this.image) {
-      // Account for canvas position
       let canvas = document.querySelector("canvas");
       let rect = canvas.getBoundingClientRect();
       this.image.position(this.x + rect.left, this.y + rect.top);
@@ -97,19 +91,24 @@ class Player {
 
   update() {
     if (this.enabled) {
-      const rect = canvas.getBoundingClientRect();
       if (this.keys.ArrowRight) {
         this.x += this.speed;
-        if(this.x >= rect.x + rect.width - this.width) this.x = rect.x + rect.width - this.width;
+        if (this.x > width - this.width) {
+          this.x = width - this.width;
+        }
       }
+
       if (this.keys.ArrowLeft) {
         this.x -= this.speed;
-        if(this.x <= rect.x) this.x = rect.x;
+        if (this.x < 0) {
+          this.x = 0;
+        }
       }
-      // Update image position
+
       if (this.image) {
         let canvas = document.querySelector("canvas");
-        this.image.position(this.x + rect.x + rect.left, this.y + rect.y + rect.top);
+        let rect = canvas.getBoundingClientRect();
+        this.image.position(this.x + rect.left, this.y + rect.top);
       }
     }
   }
