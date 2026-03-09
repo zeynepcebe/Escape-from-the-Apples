@@ -51,9 +51,9 @@ class Player {
     this.y = y;
 
     if (this.image) {
-      let canvas = document.querySelector("canvas");
-      let rect = canvas.getBoundingClientRect();
-      this.image.position(this.x + rect.left, this.y + rect.top);
+      let canvasEl = document.querySelector("canvas");
+      let rect = canvasEl.getBoundingClientRect();
+      this.image.position(rect.left + this.x, rect.top + this.y);
     }
   }
 
@@ -62,7 +62,7 @@ class Player {
       window.addEventListener("keydown", this.handleKeyDown);
       window.addEventListener("keyup", this.handleKeyUp);
       this.enabled = true;
-      this.image.show();
+      if (this.image) this.image.show();
     }
   }
 
@@ -71,7 +71,7 @@ class Player {
       window.removeEventListener("keydown", this.handleKeyDown);
       window.removeEventListener("keyup", this.handleKeyUp);
       this.enabled = false;
-      this.image.hide();
+      if (this.image) this.image.hide();
     }
   }
 
@@ -90,26 +90,30 @@ class Player {
   }
 
   update() {
-  if (!this.enabled) return;
+    if (!this.enabled || !this.image) return;
 
-  if (this.keys.ArrowRight) {
-    this.x += this.speed;
-  }
-
-  if (this.keys.ArrowLeft) {
-    this.x -= this.speed;
-  }
-
-  // always constrain the player
-  this.x = constrain(this.x, 0, width - this.width);
-
-  if (this.image) {
     let canvasEl = document.querySelector("canvas");
     let rect = canvasEl.getBoundingClientRect();
+
+    if (this.keys.ArrowRight) {
+      this.x += this.speed;
+    }
+
+    if (this.keys.ArrowLeft) {
+      this.x -= this.speed;
+    }
+
+    let imgW = this.image.elt.offsetWidth;
+    let maxX = rect.width - imgW;
+
+    if (maxX < 0) {
+      maxX = 0;
+    }
+
+    this.x = Math.max(0, Math.min(this.x, maxX));
+
     this.image.position(rect.left + this.x, rect.top + this.y);
   }
-}
-
 
   draw() {
     if (this.image && this.enabled) {
