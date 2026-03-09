@@ -90,28 +90,26 @@ class Player {
   }
 
   update() {
-    if (this.enabled) {
-      if (this.keys.ArrowRight) {
-        this.x += this.speed;
-        if (this.x > width - this.width) {
-          this.x = width - this.width;
-        }
-      }
+  if (!this.enabled) return;
 
-      if (this.keys.ArrowLeft) {
-        this.x -= this.speed;
-        if (this.x < 0) {
-          this.x = 0;
-        }
-      }
-
-      if (this.image) {
-        let canvas = document.querySelector("canvas");
-        let rect = canvas.getBoundingClientRect();
-        this.image.position(this.x + rect.left, this.y + rect.top);
-      }
-    }
+  if (this.keys.ArrowRight) {
+    this.x += this.speed;
   }
+
+  if (this.keys.ArrowLeft) {
+    this.x -= this.speed;
+  }
+
+  // always constrain the player
+  this.x = constrain(this.x, 0, width - this.width);
+
+  if (this.image) {
+    let canvasEl = document.querySelector("canvas");
+    let rect = canvasEl.getBoundingClientRect();
+    this.image.position(rect.left + this.x, rect.top + this.y);
+  }
+}
+
 
   draw() {
     if (this.image && this.enabled) {
